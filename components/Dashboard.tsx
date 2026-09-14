@@ -17,6 +17,7 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { StatsCard } from "./StatsCard";
 import { AppGrid } from "./AppGrid";
+import { HomeOverview } from "./HomeOverview";
 const normalize = (value: string) =>
   value
     .normalize("NFD")
@@ -98,7 +99,7 @@ export function Dashboard() {
           query={query}
           onQuery={(value) => {
             setQuery(value);
-            if (view === "settings") setView("apps");
+            if (view === "settings" || view === "home") setView("apps");
           }}
           dark={dark}
           onTheme={() => setTheme(dark ? "light" : "dark")}
@@ -152,133 +153,159 @@ export function Dashboard() {
               </div>
               <p className="settings-note">
                 As preferências são guardadas apenas neste navegador.
-                Autenticação e permissões estarão disponíveis numa fase futura.
               </p>
+              <div className="setting-row">
+                <div>
+                  <strong>Segurança da conta</strong>
+                  <p>rui.almeida@staples.pt</p>
+                </div>
+                <a className="secondary-button" href="/account/password">
+                  Alterar palavra-passe
+                </a>
+              </div>
             </section>
           ) : (
             <>
-              <section className="welcome">
-                <div>
-                  <span className="eyebrow">
-                    <span /> O TEU ESPAÇO DE TRABALHO
-                  </span>
-                  <h2>
-                    Olá, Rui <span className="wave">✳</span>
-                  </h2>
-                  <p>
-                    Tudo o que precisas para um dia produtivo, num só lugar.
+              {view === "home" && (
+                <>
+                  <section className="welcome">
+                    <div>
+                      <span className="eyebrow">
+                        <span /> O TEU ESPAÇO DE TRABALHO
+                      </span>
+                      <h2>
+                        Olá, Rui <span className="wave">✳</span>
+                      </h2>
+                      <p>
+                        Tudo o que precisas para um dia produtivo, num só lugar.
+                      </p>
+                    </div>
+                    <span className="workspace-badge">
+                      <span className="status-dot" />
+                      Workspace pessoal
+                    </span>
+                  </section>
+                  <section
+                    className="stats-grid"
+                    aria-label="Resumo das aplicações"
+                  >
+                    <StatsCard
+                      label="Aplicações"
+                      value={apps.length}
+                      detail="no teu workspace"
+                      icon={Grid2X2}
+                      color="blue"
+                    />
+                    <StatsCard
+                      label="Online"
+                      value={
+                        apps.filter((app) => app.status === "online").length
+                      }
+                      detail="disponíveis agora"
+                      icon={Radio}
+                      color="green"
+                    />
+                    <StatsCard
+                      label="Favoritas"
+                      value={favorites.length}
+                      detail="ainda mais perto"
+                      icon={Star}
+                      color="amber"
+                    />
+                  </section>
+                  <HomeOverview
+                    favorites={favorites}
+                    onFavorites={() => navigate("favorites")}
+                    onBrowse={(selected) => {
+                      navigate("apps");
+                      if (selected) setCategory(selected);
+                    }}
+                  />
+                </>
+              )}
+              {view !== "home" && (
+                <section className="applications catalog-section">
+                  <div className="section-heading">
+                    <div>
+                      <h2>
+                        {view === "favorites"
+                          ? "As minhas favoritas"
+                          : "As minhas aplicações"}{" "}
+                        <span>{apps.length}</span>
+                      </h2>
+                      <p>As ferramentas certas, sempre à mão.</p>
+                    </div>
+                    <span className="grid-indicator">
+                      <LayoutGrid size={17} />
+                    </span>
+                  </div>
+                  <div className="filter-bar">
+                    <div className="tabs" aria-label="Filtrar aplicações">
+                      <button
+                        className={!showFavorites ? "selected" : ""}
+                        onClick={() => {
+                          setOnlyFavorites(false);
+                          if (view === "favorites") setView("apps");
+                        }}
+                      >
+                        <Grid2X2 size={15} />
+                        Todas
+                      </button>
+                      <button
+                        className={showFavorites ? "selected" : ""}
+                        onClick={() => setOnlyFavorites(true)}
+                      >
+                        <Star size={15} />
+                        Favoritas <span>{favorites.length}</span>
+                      </button>
+                    </div>
+                    <label className="category-filter">
+                      <SlidersHorizontal size={15} />
+                      <select
+                        aria-label="Filtrar por categoria"
+                        value={category}
+                        onChange={(event) => setCategory(event.target.value)}
+                      >
+                        <option>Todas as categorias</option>
+                        {[...new Set(apps.map((app) => app.category))].map(
+                          (item) => (
+                            <option key={item}>{item}</option>
+                          ),
+                        )}
+                      </select>
+                      <ChevronDown size={13} />
+                    </label>
+                  </div>
+                  <AppGrid
+                    apps={filtered}
+                    favorites={favorites}
+                    onToggle={toggle}
+                    emptyFavorites={
+                      showFavorites && favorites.length === 0 && !query.trim()
+                    }
+                  />
+                  <p className="results-count" aria-live="polite">
+                    A mostrar {filtered.length} de {apps.length} aplicações
                   </p>
-                </div>
-                <span className="workspace-badge">
-                  <span className="status-dot" />
-                  Workspace pessoal
-                </span>
-              </section>
-              <section
-                className="stats-grid"
-                aria-label="Resumo das aplicações"
-              >
-                <StatsCard
-                  label="Aplicações"
-                  value={apps.length}
-                  detail="no teu workspace"
-                  icon={Grid2X2}
-                  color="blue"
-                />
-                <StatsCard
-                  label="Online"
-                  value={apps.filter((app) => app.status === "online").length}
-                  detail="disponíveis agora"
-                  icon={Radio}
-                  color="green"
-                />
-                <StatsCard
-                  label="Favoritas"
-                  value={favorites.length}
-                  detail="ainda mais perto"
-                  icon={Star}
-                  color="amber"
-                />
-              </section>
-              <section className="applications">
-                <div className="section-heading">
+                </section>
+              )}
+              {view === "home" && (
+                <aside className="tip">
+                  <span className="tip-icon">
+                    <Sparkles size={21} />
+                  </span>
                   <div>
-                    <h2>
-                      {view === "favorites"
-                        ? "As minhas favoritas"
-                        : "As minhas aplicações"}{" "}
-                      <span>{apps.length}</span>
-                    </h2>
-                    <p>As ferramentas certas, sempre à mão.</p>
+                    <strong>O teu dashboard, à tua maneira</strong>
+                    <p>
+                      Marca as aplicações que mais usas como favoritas para as
+                      encontrares num instante.
+                    </p>
                   </div>
-                  <span className="grid-indicator">
-                    <LayoutGrid size={17} />
-                  </span>
-                </div>
-                <div className="filter-bar">
-                  <div className="tabs" aria-label="Filtrar aplicações">
-                    <button
-                      className={!showFavorites ? "selected" : ""}
-                      onClick={() => {
-                        setOnlyFavorites(false);
-                        if (view === "favorites") setView("apps");
-                      }}
-                    >
-                      <Grid2X2 size={15} />
-                      Todas
-                    </button>
-                    <button
-                      className={showFavorites ? "selected" : ""}
-                      onClick={() => setOnlyFavorites(true)}
-                    >
-                      <Star size={15} />
-                      Favoritas <span>{favorites.length}</span>
-                    </button>
-                  </div>
-                  <label className="category-filter">
-                    <SlidersHorizontal size={15} />
-                    <select
-                      aria-label="Filtrar por categoria"
-                      value={category}
-                      onChange={(event) => setCategory(event.target.value)}
-                    >
-                      <option>Todas as categorias</option>
-                      {[...new Set(apps.map((app) => app.category))].map(
-                        (item) => (
-                          <option key={item}>{item}</option>
-                        ),
-                      )}
-                    </select>
-                    <ChevronDown size={13} />
-                  </label>
-                </div>
-                <AppGrid
-                  apps={filtered}
-                  favorites={favorites}
-                  onToggle={toggle}
-                  emptyFavorites={
-                    showFavorites && favorites.length === 0 && !query.trim()
-                  }
-                />
-                <p className="results-count" aria-live="polite">
-                  A mostrar {filtered.length} de {apps.length} aplicações
-                </p>
-              </section>
-              <aside className="tip">
-                <span className="tip-icon">
-                  <Sparkles size={21} />
-                </span>
-                <div>
-                  <strong>O teu dashboard, à tua maneira</strong>
-                  <p>
-                    Marca as aplicações que mais usas como favoritas para as
-                    encontrares num instante.
-                  </p>
-                </div>
-                <button onClick={() => navigate("favorites")}>
-                  Ver favoritos <ArrowUpRight size={16} />
-                </button>
-              </aside>
+                  <button onClick={() => navigate("favorites")}>
+                    Ver favoritos <ArrowUpRight size={16} />
+                  </button>
+                </aside>
+              )}
             </>
           )}
           <footer>

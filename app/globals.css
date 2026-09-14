@@ -1,5 +1,109 @@
 @import "tailwindcss";
 
+.catalog-section {
+  margin-top: 42px;
+}
+.home-feature {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 35px;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  margin-bottom: 32px;
+}
+.home-feature h2 {
+  font-size: 28px;
+  letter-spacing: -1px;
+  line-height: 1.25;
+  margin: 18px 0 12px;
+}
+.home-feature p,
+.home-empty p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.home-feature .primary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+.home-category-list {
+  display: grid;
+  gap: 10px;
+}
+.home-category-list button,
+.home-shortcuts a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  text-align: left;
+}
+.home-category-list button:hover,
+.home-shortcuts a:hover {
+  background: var(--soft);
+}
+.home-category-list svg,
+.home-shortcuts svg {
+  color: var(--accent);
+}
+.home-category-list svg:last-child,
+.home-shortcuts svg:last-child {
+  margin-left: auto;
+}
+.home-category-list small,
+.home-shortcuts small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.home-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 30px;
+}
+.home-empty {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  background: var(--panel);
+  border: 1px dashed var(--line);
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+.home-empty > svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.home-empty .secondary-button {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.user form {
+  margin-left: auto;
+}
+@media (max-width: 900px) {
+  .home-feature {
+    grid-template-columns: 1fr;
+  }
+  .home-shortcuts {
+    grid-template-columns: 1fr;
+  }
+  .home-empty {
+    flex-wrap: wrap;
+  }
+}
+
 :root {
   --bg: #f7f8fa;
   --panel: #fff;

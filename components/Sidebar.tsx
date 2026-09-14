@@ -96,14 +96,16 @@ export function Sidebar({
               <strong>Rui Almeida</strong>
               <small>Workspace pessoal</small>
             </div>
-            <button
-              disabled
-              title="Logout disponível com autenticação"
-              className="icon-button"
-              aria-label="Logout (indisponível)"
-            >
-              <LogOut size={17} />
-            </button>
+            <form method="post" action="/auth/logout">
+              <button
+                type="submit"
+                title="Terminar sessão"
+                className="icon-button"
+                aria-label="Terminar sessão"
+              >
+                <LogOut size={17} />
+              </button>
+            </form>
           </div>
         </div>
       </aside>

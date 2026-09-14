@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "deploy": "wrangler deploy",
     "preview": "wrangler dev",
-    "deploy:check": "wrangler deploy --dry-run"
+    "deploy:check": "wrangler deploy --dry-run",
+    "test:auth": "node scripts/test-auth.mjs"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260914.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.5.1",
     "@types/react": "^19.3.0",
