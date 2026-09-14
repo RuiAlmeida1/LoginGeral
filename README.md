@@ -4,7 +4,7 @@ Portal de aplicações internas em Next.js (App Router), TypeScript, Tailwind CS
 
 ## Executar
 
-Requer Node.js 20.9 ou superior.
+Requer Node.js 22 ou superior (incluindo a ferramenta de publicação Cloudflare).
 
 ```sh
 npm install
@@ -19,6 +19,27 @@ npm run typecheck
 npm run build
 npm start
 ```
+
+`npm start` e `npm run preview` servem o resultado estático localmente com Wrangler. O desenvolvimento continua a usar `npm run dev`.
+
+## Deploy no Cloudflare Workers
+
+O projeto exporta HTML, CSS e JavaScript para `out/` através de `output: "export"` em `next.config.ts`. `wrangler.jsonc` publica estes assets no Worker `logingeral`. Não utiliza OpenNext nem configuração interativa durante o deploy.
+
+Na integração Git do Cloudflare, usar:
+
+- Comando de build: `npm run build`
+- Comando de deploy: `npx wrangler deploy`
+- Diretório raiz: raiz do repositório
+
+O Wrangler também executa o build automaticamente quando invocado diretamente. O diretório de publicação é `out/`, nunca `.next/`.
+
+```sh
+npm run deploy:check # build e validação do pacote sem publicação
+npm run deploy       # requer autenticação Cloudflare
+```
+
+As preferências continuam guardadas no navegador. Funcionalidades futuras que exijam um servidor obrigam a rever a exportação estática e a integração Cloudflare.
 
 ## Catálogo
 
@@ -45,4 +66,4 @@ O estado é configurado localmente: não existe monitorização da disponibilida
 
 O catálogo pode evoluir para uma camada de dados autenticada e as preferências locais para dados por utilizador. Autenticação, permissões, recentes, estatísticas de utilização, administração e notificações reais não estão implementadas. Futuras permissões devem ser verificadas no servidor.
 
-Não foi configurado qualquer deploy.
+Documentação: [Next.js Static Exports](https://nextjs.org/docs/app/guides/static-exports) e [Cloudflare Static Assets](https://developers.cloudflare.com/workers/static-assets/).
