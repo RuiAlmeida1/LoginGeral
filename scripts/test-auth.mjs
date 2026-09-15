@@ -101,7 +101,7 @@ assert.equal(
 const passwordPage = await (await request("/account/password")).text();
 const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(passwordPage)?.[1];
 assert.ok(csrf);
-const next = randomBytes(18).toString("base64url");
+const next = `  Ação+&=%"'漢字-${randomBytes(18).toString("base64url")}  `;
 assert.equal(
   (
     await request("/auth/password", {

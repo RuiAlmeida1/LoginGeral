@@ -2,13 +2,13 @@ import { Map, Boxes, ClipboardCheck } from "lucide-react";
 import type { Application } from "@/types/app";
 
 // Adicionar uma aplicação requer apenas um novo objeto nesta lista.
-// Substituir os URLs de exemplo pelos endereços reais antes de utilizar o portal.
+// O `url` é o endereço aberto ao clicar no cartão (o cartão inteiro é clicável).
 export const apps: readonly Application[] = [
   {
     id: "plantas",
     name: "Plantas",
     description: "Gestão de plantas, layouts e modelação de lojas.",
-    url: "https://plantas.exemplo.com",
+    url: "https://plantas.free-promo.online/",
     icon: Map,
     category: "Modelação",
     status: "online",

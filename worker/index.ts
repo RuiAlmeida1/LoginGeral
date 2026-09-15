@@ -125,18 +125,24 @@ async function handle(request: Request, env: Env): Promise<Response> {
       password.slice(0, 128),
       user?.password_hash ?? dummy,
     );
+    if (!user || !valid || !password || password.length > 128)
+      return html(
+        authPage("login", {
+          email,
+          error:
+            "Email ou palavra-passe incorretos. Confirma o email e usa Mostrar palavra-passe para verificar o que escreveste.",
+        }),
+        401,
+      );
     if (
-      !user ||
-      !valid ||
-      !password ||
-      password.length > 128 ||
-      (user.must_change_password &&
-        (!user.temporary_expires_at || user.temporary_expires_at < now()))
+      user.must_change_password &&
+      (!user.temporary_expires_at || user.temporary_expires_at < now())
     )
       return html(
         authPage("login", {
+          email,
           error:
-            "Email ou palavra-passe inválidos, ou acesso temporário expirado.",
+            "A palavra-passe temporária expirou. Pede uma nova palavra-passe temporária.",
         }),
         401,
       );
@@ -157,6 +163,7 @@ async function handle(request: Request, env: Env): Promise<Response> {
     return html(
       authPage("password", {
         csrf: session.token_hash,
+        email: session.email,
         required: !!session.must_change_password,
       }),
     );
@@ -172,6 +179,7 @@ async function handle(request: Request, env: Env): Promise<Response> {
         authPage("password", {
           error: message,
           csrf: session.token_hash,
+          email: session.email,
           required: !!session.must_change_password,
         }),
         status,
