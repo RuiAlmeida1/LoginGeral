@@ -9,6 +9,6 @@ export interface Application {
   icon: LucideIcon;
   category: string;
   status: AppStatus;
-  color: "blue" | "green" | "purple";
+  color: "blue" | "green" | "purple" | "amber";
 }
 export type View = "home" | "apps" | "favorites" | "settings";

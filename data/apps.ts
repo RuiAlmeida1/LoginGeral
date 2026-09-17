@@ -1,4 +1,4 @@
-import { Map, Boxes, ClipboardCheck } from "lucide-react";
+import { Map, Boxes, ClipboardCheck, Wallet } from "lucide-react";
 import type { Application } from "@/types/app";
 
 // Adicionar uma aplicação requer apenas um novo objeto nesta lista.
@@ -33,5 +33,15 @@ export const apps: readonly Application[] = [
     category: "Produtividade",
     status: "online",
     color: "purple",
+  },
+  {
+    id: "gestao-promo",
+    name: "Gestão Promo",
+    description: "Orçamento anual, movimentos e compromissos da área Promo.",
+    url: "https://promobudget.free-promo.online/",
+    icon: Wallet,
+    category: "Orçamento",
+    status: "online",
+    color: "amber",
   },
 ];
