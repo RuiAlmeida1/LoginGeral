@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { apps } from "@/data/apps";
 import type { View } from "@/types/app";
-import { parseFavorites, usePreference } from "@/hooks/usePreferences";
+import { useFavorites, usePreference } from "@/hooks/usePreferences";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { StatsCard } from "./StatsCard";
@@ -29,12 +29,9 @@ export function Dashboard() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todas as categorias");
   const [onlyFavorites, setOnlyFavorites] = useState(false);
-  const [storedFavorites, setFavorites] = usePreference(
-    "dashboard:favorites",
-    "[]",
-  );
+  const [storedFavorites, setFavorites] = useFavorites();
   const [theme, setTheme] = usePreference("dashboard:theme", "light");
-  const favorites = parseFavorites(storedFavorites).filter((id) =>
+  const favorites = storedFavorites.filter((id) =>
     apps.some((app) => app.id === id),
   );
   const dark = theme === "dark";
@@ -75,11 +72,9 @@ export function Dashboard() {
   }
   function toggle(id: string) {
     setFavorites(
-      JSON.stringify(
-        favorites.includes(id)
-          ? favorites.filter((item) => item !== id)
-          : [...favorites, id],
-      ),
+      favorites.includes(id)
+        ? favorites.filter((item) => item !== id)
+        : [...favorites, id],
     );
   }
   return (
@@ -146,7 +141,7 @@ export function Dashboard() {
                 <button
                   className="secondary-button"
                   disabled={!favorites.length}
-                  onClick={() => setFavorites("[]")}
+                  onClick={() => setFavorites([])}
                 >
                   Limpar favoritos
                 </button>

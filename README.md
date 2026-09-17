@@ -54,7 +54,7 @@ npm run deploy:check # build e validação do pacote sem publicação
 npm run deploy       # requer autenticação Cloudflare
 ```
 
-Aplicar novas migrações com `npx wrangler d1 migrations apply dashboard-geral-auth --remote` antes de publicar código que dependa delas. As preferências continuam guardadas no navegador.
+Aplicar novas migrações com `npx wrangler d1 migrations apply dashboard-geral-auth --remote` antes de publicar código que dependa delas. Os favoritos são guardados na conta (D1); sem a migração `0002_favorites.sql` o endpoint devolve erro e a aplicação mantém-se apenas com o cache local.
 
 ## Catálogo
 
@@ -66,7 +66,7 @@ O estado é configurado localmente: não existe monitorização da disponibilida
 
 - Pesquisa por nome, descrição e categoria, ignorando acentos e maiúsculas. Atalho `/`.
 - Filtros de favoritos e categoria, com estados vazios.
-- Favoritos e Light/Dark persistidos em localStorage, sincronizados entre separadores. Se indisponível, utiliza memória durante a sessão.
+- Favoritos guardados na conta em D1 (`/api/preferences`), com cache em localStorage para carregamento imediato e sincronização entre separadores. O tema Light/Dark continua apenas no navegador. Sem acesso ao servidor, usa o cache local ou memória durante a sessão.
 - Leitura do armazenamento apenas no cliente, com estado inicial estável para hidratação.
 - Menu mobile, navegação por teclado e movimento reduzido.
 - Início com resumo, categorias e atalhos favoritos; Aplicações com catálogo, pesquisa e filtros.
@@ -78,7 +78,7 @@ O estado é configurado localmente: não existe monitorização da disponibilida
 - `components/`: componentes reutilizáveis e orquestração do dashboard.
 - `data/apps.ts`: configuração central.
 - `types/app.ts`: tipos do catálogo e navegação.
-- `hooks/usePreferences.ts`: persistência local e validação de favoritos.
+- `hooks/usePreferences.ts`: cache local, sincronização com a conta e validação de favoritos.
 - `worker/`: autenticação, sessões e páginas de entrada/alteração de palavra-passe.
 - `migrations/`: esquema D1, sem credenciais.
 - `scripts/`: criação inicial de conta e testes de integração locais.

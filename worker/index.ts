@@ -33,6 +33,36 @@ function html(body: string, status = 200) {
     headers: { "Content-Type": "text/html; charset=utf-8" },
   });
 }
+function json(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
+}
+const FAVORITE_ID = /^[a-z0-9][a-z0-9-]{0,63}$/;
+const MAX_FAVORITES = 200;
+function favoriteList(value: string | null | undefined) {
+  if (!value) return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed)
+      ? parsed.filter(
+          (id): id is string => typeof id === "string" && FAVORITE_ID.test(id),
+        )
+      : [];
+  } catch {
+    return [];
+  }
+}
+function cleanFavorites(value: unknown): string[] | null {
+  if (!Array.isArray(value) || value.length > MAX_FAVORITES) return null;
+  const ids: string[] = [];
+  for (const item of value) {
+    if (typeof item !== "string" || !FAVORITE_ID.test(item)) return null;
+    if (!ids.includes(item)) ids.push(item);
+  }
+  return ids;
+}
 async function sessionFor(request: Request, env: Env) {
   const token = request.headers
     .get("Cookie")
@@ -221,6 +251,41 @@ async function handle(request: Request, env: Env): Promise<Response> {
   }
   if (session.must_change_password) return redirect("/account/password");
   if (url.pathname === "/login") return redirect("/");
+  if (url.pathname === "/api/preferences") {
+    if (request.method === "GET") {
+      const row = await env.DB.prepare(
+        "SELECT favorites FROM preferences WHERE user_id = ?",
+      )
+        .bind(session.id)
+        .first<{ favorites: string }>();
+      return json(
+        row
+          ? { stored: true, favorites: favoriteList(row.favorites) }
+          : { stored: false, favorites: [] },
+      );
+    }
+    if (request.method !== "POST")
+      return new Response("Método não permitido", { status: 405 });
+    const body = await request.text();
+    if (body.length > 2048)
+      return new Response("Pedido demasiado grande", { status: 413 });
+    let payload: unknown;
+    try {
+      payload = JSON.parse(body);
+    } catch {
+      return new Response("Pedido inválido", { status: 400 });
+    }
+    const favorites = cleanFavorites(
+      (payload as { favorites?: unknown } | null)?.favorites,
+    );
+    if (!favorites) return new Response("Pedido inválido", { status: 400 });
+    await env.DB.prepare(
+      "INSERT INTO preferences(user_id, favorites, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET favorites = excluded.favorites, updated_at = excluded.updated_at",
+    )
+      .bind(session.id, JSON.stringify(favorites), now())
+      .run();
+    return json({ stored: true, favorites });
+  }
   if (request.method === "POST")
     return new Response("Não encontrado", { status: 404 });
   return env.ASSETS.fetch(request);
