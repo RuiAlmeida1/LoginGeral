@@ -114,6 +114,20 @@
   --soft: #eff3ff;
   --hover: #f5f7fb;
   --shadow: 0 4px 20px #20344d04;
+  --avatar-bg: #f0e9e0;
+  --avatar-ink: #856d53;
+  --accent-ink: #fff;
+  --accent-soft: #5270df2e;
+  --ring: 0 0 0 3px #5270df3d;
+  --shadow-sm: 0 1px 2px #20344d0a;
+  --shadow-md: 0 12px 28px #20344d14;
+  --shadow-lg: 0 20px 48px #20344d1f;
+  --radius-xs: 5px;
+  --radius-sm: 7px;
+  --radius: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --speed: 0.18s;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -126,10 +140,38 @@
   --soft: #283353;
   --hover: #222a39;
   --shadow: 0 4px 20px #0002;
+  --avatar-bg: #2a2f3d;
+  --avatar-ink: #cbb89f;
+  --accent-ink: #101827;
+  --accent-soft: #95aaff38;
+  --ring: 0 0 0 3px #95aaff3d;
+  --shadow-sm: 0 1px 2px #0006;
+  --shadow-md: 0 12px 28px #0007;
+  --shadow-lg: 0 20px 48px #0009;
   color-scheme: dark;
 }
 * {
   box-sizing: border-box;
+}
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border: 3px solid var(--bg);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 body {
   margin: 0;
@@ -137,7 +179,13 @@ body {
   color: var(--ink);
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition:
+    background-color var(--speed),
+    color var(--speed);
 }
 button,
 input,
@@ -196,6 +244,9 @@ p {
   display: flex;
   flex-direction: column;
   z-index: 30;
+  transition:
+    background-color var(--speed),
+    border-color var(--speed);
 }
 .brand {
   background: transparent;
@@ -204,6 +255,7 @@ p {
   gap: 11px;
   align-items: center;
   padding: 0 8px;
+  border-radius: var(--radius-sm);
 }
 .brand-icon {
   background: #536fe0;
@@ -214,6 +266,13 @@ p {
   height: 38px;
   border-radius: 11px;
   box-shadow: 0 4px 10px #5270df25;
+  transition:
+    transform var(--speed),
+    box-shadow var(--speed);
+}
+.brand:hover .brand-icon {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px var(--accent-soft);
 }
 .brand strong {
   font-size: 21px;
@@ -242,12 +301,15 @@ p {
   align-items: center;
   gap: 12px;
   background: transparent;
-  color: #758091;
+  color: var(--muted);
   padding: 13px;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   margin-bottom: 7px;
   font-size: 13px;
   text-align: left;
+  transition:
+    background-color var(--speed),
+    color var(--speed);
 }
 .nav-item.active {
   background: var(--soft);
@@ -259,7 +321,7 @@ p {
 }
 .nav-count {
   margin-left: auto;
-  border-radius: 5px;
+  border-radius: var(--radius-xs);
   background: var(--panel);
   padding: 2px 6px;
   font-size: 10px;
@@ -309,8 +371,8 @@ p {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #f0e9e0;
-  color: #856d53;
+  background: var(--avatar-bg);
+  color: var(--avatar-ink);
   font-size: 11px;
   font-weight: 600;
   border: 3px solid var(--panel);
@@ -341,6 +403,9 @@ p {
   border-bottom: 1px solid var(--line);
   background: var(--panel);
   gap: 20px;
+  transition:
+    background-color var(--speed),
+    border-color var(--speed);
 }
 .header h1 {
   font-size: 20px;
@@ -362,10 +427,19 @@ p {
   align-items: center;
   gap: 9px;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
   color: var(--muted);
   background: var(--bg);
+  transition:
+    background-color var(--speed),
+    border-color var(--speed),
+    box-shadow var(--speed);
+}
+.search:focus-within {
+  border-color: var(--accent);
+  background: var(--panel);
+  box-shadow: var(--ring);
 }
 .search input {
   width: 170px;
@@ -375,6 +449,9 @@ p {
   font-size: 11px;
   min-width: 0;
   outline-offset: 7px;
+}
+.search input:focus-visible {
+  outline: none;
 }
 .search input::placeholder {
   color: var(--muted);
@@ -393,10 +470,17 @@ kbd {
   width: 30px;
   height: 32px;
   border-radius: 6px;
+  transition:
+    background-color var(--speed),
+    color var(--speed),
+    transform var(--speed);
 }
 .icon-button:hover {
   background: var(--hover);
   color: var(--ink);
+}
+.icon-button:active {
+  transform: scale(0.95);
 }
 .header-divider {
   height: 24px;
